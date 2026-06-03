@@ -7,3 +7,4 @@ export * from "./ReminderSettings";
 export * from "./CoachPackSettings";
 export * from "./TelemetryToggle";
 export * from "./UpgradeBadgesSettings";
+export * from "./OcrAssistSettings";

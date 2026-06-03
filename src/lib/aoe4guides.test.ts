@@ -80,6 +80,9 @@ describe("aoe4guides utilities", () => {
       expect(getCivNameFromCode("MAC")).toBe("Macedonian Dynasty");
       expect(getCivNameFromCode("SEN")).toBe("Sengoku Daimyo");
       expect(getCivNameFromCode("TUG")).toBe("Tughlaq Dynasty");
+      expect(getCivNameFromCode("KTE")).toBe("Knights Templar");
+      expect(getCivNameFromCode("LAN")).toBe("House of Lancaster");
+      expect(getCivNameFromCode("JIN")).toBe("Jin Dynasty");
     });
 
     it("is case insensitive", () => {
@@ -900,7 +903,7 @@ describe("aoe4guides API", () => {
       expect(result.steps[0].resources?.stone).toBeUndefined();
     });
 
-    it("handles unknown civilization codes with fallback", async () => {
+    it("handles unknown civilization codes with warnings", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -918,11 +921,12 @@ describe("aoe4guides API", () => {
         }),
       });
 
-      // Should fall back to English and log a warning
+      // Should preserve the source civ code and log a warning
       const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => { });
       const result = await fetchAoe4GuidesBuild("test");
 
-      expect(result.civilization).toBe("English");
+      expect(result.civilization).toBe("UNKNOWN_CIV");
+      expect(result.warnings?.[0]).toContain('Unknown civilization code "UNKNOWN_CIV"');
       expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
@@ -1214,6 +1218,9 @@ describe("CIVILIZATION_TO_CODE mapping", () => {
     expect(CIVILIZATION_TO_CODE["Macedonian Dynasty"]).toBe("MAC");
     expect(CIVILIZATION_TO_CODE["Sengoku Daimyo"]).toBe("SEN");
     expect(CIVILIZATION_TO_CODE["Tughlaq Dynasty"]).toBe("TUG");
+    expect(CIVILIZATION_TO_CODE["Knights Templar"]).toBe("KTE");
+    expect(CIVILIZATION_TO_CODE["House of Lancaster"]).toBe("LAN");
+    expect(CIVILIZATION_TO_CODE["Jin Dynasty"]).toBe("JIN");
   });
 });
 

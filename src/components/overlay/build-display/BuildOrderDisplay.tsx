@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useBuildOrderStore, useCurrentBuildOrder, useActiveSteps, useActiveBranchId } from "@/stores";
+import { useBuildOrderStore, useCurrentBuildOrder, useActiveSteps, useActiveBranchId, useConfigStore } from "@/stores";
 import { BuildOrderStep } from "./BuildOrderStep";
 import { logTelemetryEvent, cn } from "@/lib/utils";
 import { useTimer } from "@/hooks";
@@ -11,6 +11,7 @@ export function BuildOrderDisplay() {
   const goToStep = useBuildOrderStore((s) => s.goToStep);
   const setActiveBranch = useBuildOrderStore((s) => s.setActiveBranch);
   const activeBranchId = useActiveBranchId();
+  const hotkeys = useConfigStore((s) => s.config.hotkeys);
   const activeSteps = useActiveSteps();
   const activeBranchName = currentOrder?.branches?.find((b) => b.id === activeBranchId)?.name;
   const { isRunning, start } = useTimer();
@@ -78,7 +79,15 @@ export function BuildOrderDisplay() {
               >
                 Base
               </button>
-              {currentOrder.branches.map((branch) => (
+              {currentOrder.branches.map((branch, branchIndex) => {
+                const hotkey = [
+                  hotkeys.activate_branch_1,
+                  hotkeys.activate_branch_2,
+                  hotkeys.activate_branch_3,
+                  hotkeys.activate_branch_4,
+                ][branchIndex];
+
+                return (
                 <button
                   key={branch.id}
                   onClick={() => handleBranchSelect(branch.id)}
@@ -86,11 +95,20 @@ export function BuildOrderDisplay() {
                     ? "bg-white/[0.08] text-white shadow-sm"
                     : "text-white/40 hover:text-white/70"
                     }`}
-                  title={branch.trigger ? `Trigger: ${branch.trigger}` : undefined}
+                  title={[
+                    branch.trigger ? `Trigger: ${branch.trigger}` : undefined,
+                    hotkey ? `Hotkey: ${hotkey}` : undefined,
+                  ].filter(Boolean).join(" • ") || undefined}
                 >
-                  {branch.name}
+                  <span>{branch.name}</span>
+                  {hotkey && (
+                    <span className="ml-1 text-[9px] opacity-60 font-mono">
+                      {hotkey.replace("Ctrl+Alt+", "")}
+                    </span>
+                  )}
                 </button>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

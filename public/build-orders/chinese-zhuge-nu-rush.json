@@ -5,6 +5,8 @@
   "description": "Uses the Song Dynasty for rapid [icon:villager] production. Overwhelms opponents with a mass of [icon:zhuge_nu] Zhuge Nu spam.",
   "difficulty": "Advanced",
   "enabled": true,
+  "contentVersion": "2026-05-07",
+  "source": { "type": "bundled", "rawCivilization": "Chinese" },
   "steps": [
     {
       "id": "step-1",

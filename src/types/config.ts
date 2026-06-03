@@ -77,7 +77,36 @@ export interface TimerDriftConfig {
   enabled: boolean; // Auto-adjust step timings when behind pace
 }
 
-export type OverlayPreset = "minimal" | "info_dense";
+export type OverlayPreset = "minimal" | "coach" | "build-order" | "matchup" | "stream" | "info_dense";
+
+export interface OcrCaptureRegion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface OcrAssistSignalsConfig {
+  age: boolean;
+  resources: boolean;
+  population: boolean;
+}
+
+export interface OcrAssistConfig {
+  enabled: boolean;
+  captureRegion?: OcrCaptureRegion;
+  pollIntervalMs: number;
+  confidenceThreshold: number;
+  signals: OcrAssistSignalsConfig;
+}
+
+export interface StreamOverlayConfig {
+  enabled: boolean;
+  showHotkeys: boolean;
+  showBuildName: boolean;
+  showPlayerStats: boolean;
+  transparentBackground: boolean;
+}
 
 export interface TelemetryConfig {
   enabled: boolean;
@@ -115,6 +144,7 @@ export interface AppConfig {
   font_size: FontSize;
   theme: Theme;
   overlay_preset?: OverlayPreset;
+  assetContentVersion?: string;
   hotkeys: HotkeyConfig;
   window_position?: WindowPosition;
   window_size?: WindowSize;
@@ -133,6 +163,8 @@ export interface AppConfig {
   telemetry?: TelemetryConfig;
   metronome?: MetronomeConfig;
   coach_pack?: CoachPackConfig;
+  ocrAssist?: OcrAssistConfig;
+  streamOverlay?: StreamOverlayConfig;
   show_clock?: boolean;
 }
 
@@ -194,12 +226,32 @@ export const DEFAULT_COACH_PACK_CONFIG: CoachPackConfig = {
   files: {},
 };
 
+export const DEFAULT_OCR_ASSIST_CONFIG: OcrAssistConfig = {
+  enabled: false,
+  pollIntervalMs: 1500,
+  confidenceThreshold: 0.82,
+  signals: {
+    age: true,
+    resources: true,
+    population: true,
+  },
+};
+
+export const DEFAULT_STREAM_OVERLAY_CONFIG: StreamOverlayConfig = {
+  enabled: false,
+  showHotkeys: true,
+  showBuildName: true,
+  showPlayerStats: false,
+  transparentBackground: true,
+};
+
 export const DEFAULT_CONFIG: AppConfig = {
   overlay_opacity: 0.95,
   ui_scale: 1,
   font_size: "medium",
   theme: "dark",
-  overlay_preset: "info_dense",
+  overlay_preset: "build-order",
+  assetContentVersion: "2026-05-07",
   hotkeys: {
     toggle_overlay: "Ctrl+Alt+F1",
     previous_step: "Ctrl+Alt+F2",
@@ -232,5 +284,7 @@ export const DEFAULT_CONFIG: AppConfig = {
   telemetry: DEFAULT_TELEMETRY_CONFIG,
   metronome: DEFAULT_METRONOME_CONFIG,
   coach_pack: DEFAULT_COACH_PACK_CONFIG,
+  ocrAssist: DEFAULT_OCR_ASSIST_CONFIG,
+  streamOverlay: DEFAULT_STREAM_OVERLAY_CONFIG,
   show_clock: true,
 };

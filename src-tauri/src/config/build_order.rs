@@ -27,6 +27,23 @@ pub struct BuildOrder {
     pub favorite: bool,
     #[serde(default)]
     pub branches: Option<Vec<BuildOrderBranch>>,
+    #[serde(default)]
+    pub source: Option<BuildOrderSourceMetadata>,
+    #[serde(default, rename = "contentVersion")]
+    pub content_version: Option<String>,
+    #[serde(default)]
+    pub warnings: Option<Vec<String>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct BuildOrderSourceMetadata {
+    #[serde(rename = "type")]
+    pub source_type: String,
+    pub url: Option<String>,
+    pub imported_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub raw_civilization: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -195,6 +212,9 @@ mod tests {
             pinned: false,
             favorite: false,
             branches: None,
+            source: None,
+            content_version: None,
+            warnings: None,
         }
     }
 

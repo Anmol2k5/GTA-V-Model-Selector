@@ -146,6 +146,11 @@ Jeanne d'Arc, Ayyubids, Zhu Xi's Legacy, Order of the Dragon
 **Dynasties of the East:**
 Golden Horde, Macedonian Dynasty, Sengoku Daimyo, Tughlaq Dynasty
 
+**Knights of Cross and Rose / Yue Fei's Legacy:**
+Knights Templar, House of Lancaster, Jin Dynasty
+
+**Content baseline:** 2026-05-07. Bundled builds and asset metadata carry this version so outdated content is easier to identify.
+
 </details>
 
 ---

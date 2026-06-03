@@ -198,6 +198,15 @@ const CIVILIZATION_MAP: Record<string, Civilization> = {
   tughlaq_dynasty: "Tughlaq Dynasty",
   tughlaqdynasty: "Tughlaq Dynasty",
   tughlaq: "Tughlaq Dynasty",
+  knights_templar: "Knights Templar",
+  knightstemplar: "Knights Templar",
+  templar: "Knights Templar",
+  house_of_lancaster: "House of Lancaster",
+  houseoflancaster: "House of Lancaster",
+  lancaster: "House of Lancaster",
+  jin_dynasty: "Jin Dynasty",
+  jindynasty: "Jin Dynasty",
+  jin: "Jin Dynasty",
 };
 
 // Difficulty mapping
@@ -245,22 +254,21 @@ export function extractBuildId(url: string): number | null {
 }
 
 /**
- * Normalize civilization name from API to our format
- * Logs a warning if civilization is unknown and falls back to English
+ * Normalize civilization name from API to our format.
+ * Unknown civs are preserved so imports do not silently become English.
  */
-function normalizeCivilization(civ: string): Civilization {
+function normalizeCivilization(civ: string): { civilization: Civilization; warning?: string } {
   const normalized = civ.toLowerCase().replace(/[\s-]+/g, "_");
   const mapped = CIVILIZATION_MAP[normalized];
 
   if (!mapped) {
-    console.warn(
-      `Unknown civilization "${civ}" from AoE4World API. ` +
-      `Falling back to "English". Please report this if it's a valid civilization.`
-    );
-    return "English";
+    const warning =
+      `Unknown civilization "${civ}" from AoE4World API. Preserved source value; icon/theme support may be limited.`;
+    console.warn(warning);
+    return { civilization: civ as Civilization, warning };
   }
 
-  return mapped;
+  return { civilization: mapped };
 }
 
 /**
@@ -319,6 +327,8 @@ function convertBuild(build: Aoe4WorldBuild): BuildOrder {
   }
 
   const intelligentConverter = new IntelligentConverter();
+  const normalizedCivilization = normalizeCivilization(build.civilization);
+  const warnings = normalizedCivilization.warning ? [normalizedCivilization.warning] : undefined;
 
   const steps: BuildOrderStep[] = build.steps.map((step, index) => {
     const ourStep: BuildOrderStep = {
@@ -359,11 +369,20 @@ function convertBuild(build: Aoe4WorldBuild): BuildOrder {
   const converted = BuildOrderSchema.parse({
     id: `aoe4world-${build.id}`,
     name: build.title || "Imported Build",
-    civilization: normalizeCivilization(build.civilization) as Civilization,
+    civilization: normalizedCivilization.civilization,
     description: descParts.join(". "),
     difficulty: normalizeDifficulty(build.difficulty),
     enabled: true,
     steps,
+    source: {
+      type: "aoe4world",
+      url: `https://aoe4world.com/builds/${build.id}`,
+      importedAt: new Date().toISOString(),
+      updatedAt: build.updated_at,
+      rawCivilization: build.civilization,
+    },
+    contentVersion: "2026-05-07",
+    warnings,
   });
 
   return converted as unknown as BuildOrder;

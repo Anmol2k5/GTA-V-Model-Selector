@@ -1,4 +1,4 @@
-import { Civilization } from "@/types";
+import type { Civilization } from "@/types";
 
 export type UnitCategory = "Infantry" | "Cavalry" | "Siege" | "Worker" | "Ship";
 

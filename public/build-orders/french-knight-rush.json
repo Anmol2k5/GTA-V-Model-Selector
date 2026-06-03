@@ -5,6 +5,8 @@
   "description": "Exploits French faster [icon:villager] production. Fast [icon:feudal_age] Feudal Age into early [icon:knight] Royal Knight harassment.",
   "difficulty": "Intermediate",
   "enabled": true,
+  "contentVersion": "2026-05-07",
+  "source": { "type": "bundled", "rawCivilization": "French" },
   "steps": [
     {
       "id": "step-1",

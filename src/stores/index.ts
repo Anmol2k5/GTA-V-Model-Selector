@@ -5,6 +5,7 @@ export * from "./playerStore";
 export * from "./timerStore";
 export * from "./unitStore";
 export * from "./badgeStore";
+export * from "./ocrAssistStore";
 export * from "./sessionStore";
 export * from "./eventLogStore";
 export * from "./matchupStore";

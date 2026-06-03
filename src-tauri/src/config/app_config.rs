@@ -12,6 +12,8 @@ pub struct AppConfig {
     pub theme: String,
     #[serde(default = "default_overlay_preset")]
     pub overlay_preset: String,
+    #[serde(default = "default_asset_content_version", rename = "assetContentVersion")]
+    pub asset_content_version: String,
     pub hotkeys: HotkeyConfig,
     pub window_position: Option<WindowPosition>,
     pub window_size: Option<WindowSize>,
@@ -36,6 +38,10 @@ pub struct AppConfig {
     pub timer_drift: Option<TimerDriftConfig>,
     #[serde(default)]
     pub telemetry: Option<TelemetryConfig>,
+    #[serde(default, rename = "ocrAssist")]
+    pub ocr_assist: Option<OcrAssistConfig>,
+    #[serde(default, rename = "streamOverlay")]
+    pub stream_overlay: Option<StreamOverlayConfig>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -82,7 +88,11 @@ fn default_ui_scale() -> f64 {
 }
 
 fn default_overlay_preset() -> String {
-    "info_dense".to_string()
+    "build-order".to_string()
+}
+
+fn default_asset_content_version() -> String {
+    "2026-05-07".to_string()
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -212,6 +222,70 @@ pub struct TelemetryConfig {
     pub max_events: u32,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct OcrCaptureRegion {
+    pub x: u32,
+    pub y: u32,
+    pub width: u32,
+    pub height: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct OcrAssistSignalsConfig {
+    pub age: bool,
+    pub resources: bool,
+    pub population: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct OcrAssistConfig {
+    pub enabled: bool,
+    pub capture_region: Option<OcrCaptureRegion>,
+    pub poll_interval_ms: u32,
+    pub confidence_threshold: f64,
+    pub signals: OcrAssistSignalsConfig,
+}
+
+impl Default for OcrAssistConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            capture_region: None,
+            poll_interval_ms: 1500,
+            confidence_threshold: 0.82,
+            signals: OcrAssistSignalsConfig {
+                age: true,
+                resources: true,
+                population: true,
+            },
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct StreamOverlayConfig {
+    pub enabled: bool,
+    pub show_hotkeys: bool,
+    pub show_build_name: bool,
+    pub show_player_stats: bool,
+    pub transparent_background: bool,
+}
+
+impl Default for StreamOverlayConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            show_hotkeys: true,
+            show_build_name: true,
+            show_player_stats: false,
+            transparent_background: true,
+        }
+    }
+}
+
 impl Default for ReminderConfig {
     fn default() -> Self {
         Self {
@@ -236,6 +310,7 @@ impl Default for AppConfig {
             font_size: "medium".to_string(),
             theme: "dark".to_string(),
             overlay_preset: default_overlay_preset(),
+            asset_content_version: default_asset_content_version(),
             hotkeys: HotkeyConfig {
                 toggle_overlay: "Ctrl+Alt+F1".to_string(),
                 previous_step: "Ctrl+Alt+F2".to_string(),
@@ -275,6 +350,8 @@ impl Default for AppConfig {
                 capture_hotkeys: true,
                 max_events: 200,
             }),
+            ocr_assist: Some(OcrAssistConfig::default()),
+            stream_overlay: Some(StreamOverlayConfig::default()),
         }
     }
 }
@@ -289,7 +366,7 @@ mod tests {
         assert_eq!(config.overlay_opacity, 0.8);
         assert_eq!(config.font_size, "medium");
         assert_eq!(config.theme, "dark");
-        assert!(config.click_through);
+        assert!(!config.click_through);
         assert!(!config.compact_mode);
         assert_eq!(config.hotkeys.toggle_overlay, "Ctrl+Alt+F1");
     }
@@ -314,7 +391,7 @@ mod tests {
 
     #[test]
     fn test_default_overlay_preset() {
-        assert_eq!(default_overlay_preset(), "info_dense");
+        assert_eq!(default_overlay_preset(), "build-order");
     }
 
     #[test]

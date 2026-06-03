@@ -30,18 +30,29 @@ export function Overlay() {
   const { isRunning } = useTimer();
   const { toggleWithUndo, undoClickThrough, undoActive } = useClickThroughUndo();
   const scale = config.ui_scale ?? 1;
+  const overlayPreset = config.overlay_preset === "info_dense"
+    ? "build-order"
+    : config.overlay_preset ?? "build-order";
 
-  const coachOnly = config.coach_only_mode ?? false;
+  const coachOnly = (config.coach_only_mode ?? false) || overlayPreset === "coach";
+  const useCompactView = config.compact_mode || overlayPreset === "minimal";
+  const showIntelPanels = overlayPreset === "matchup" || overlayPreset === "stream";
+  const showScoutGuide = overlayPreset === "matchup";
+  const maxWidth =
+    overlayPreset === "stream" ? 960 : overlayPreset === "matchup" ? 820 : 680;
 
   // Sync build orders when changed from settings window
   useBuildOrderSync();
 
   const civThemeClass = currentBuild
-    ? `civ-theme-${currentBuild.civilization.toLowerCase().replace(/\s+/g, '-')}`
+    ? `civ-theme-${currentBuild.civilization
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")}`
     : "civ-theme-default";
 
   // Show compact view if enabled
-  if (config.compact_mode) {
+  if (useCompactView) {
     return <div className={civThemeClass}><CompactOverlay /></div>;
   }
 
@@ -101,12 +112,15 @@ export function Overlay() {
       style={{
         opacity,
         minWidth: 420,
-        maxWidth: 800,
+        maxWidth,
         transform: `scale(${scale})`,
         transformOrigin: "top left",
       }}
     >
-      <div className="glass-v3 overflow-hidden relative shadow-2xl flex flex-col min-h-[300px]">
+      <div className={cn(
+        "glass-v3 overflow-hidden relative shadow-2xl flex flex-col min-h-[300px]",
+        `overlay-preset-${overlayPreset}`
+      )}>
         {/* Dynamic Aura Background */}
         <div className="aura-bg">
           <div className="aura-spot" />
@@ -156,7 +170,7 @@ export function Overlay() {
             onUndoClickThrough={undoClickThrough}
           />
           {(isRunning || currentStep?.timing) && (
-            <div className="flex-1 max-w-[200px] ml-4">
+            <div className="ml-4 min-w-[240px] max-w-[280px] flex-1">
               <TimerBar targetTiming={currentStep?.timing} />
             </div>
           )}
@@ -164,15 +178,15 @@ export function Overlay() {
 
         {/* Feature Panels */}
         <div className="relative z-20">
-          <MatchupPanel />
-          <CounterGrid />
+          {showIntelPanels && <MatchupPanel />}
+          {showIntelPanels && <CounterGrid />}
           <UpgradeBadges />
         </div>
 
         {/* Main Content Area */}
         <div className="flex-1 overflow-hidden flex flex-col">
           <BuildOrderDisplay />
-          <ScoutGuide />
+          {showScoutGuide && <ScoutGuide />}
         </div>
 
         {/* Quick Footer Navigation */}

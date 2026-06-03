@@ -14,6 +14,21 @@ export interface BuildOrderStep {
   resources?: Resources;
 }
 
+export type BuildOrderSourceType =
+  | "bundled"
+  | "aoe4world"
+  | "aoe4guides"
+  | "age4builder"
+  | "manual";
+
+export interface BuildOrderSourceMetadata {
+  type: BuildOrderSourceType;
+  url?: string;
+  importedAt?: string;
+  updatedAt?: string;
+  rawCivilization?: string;
+}
+
 export interface BuildOrderBranch {
   id: string;
   name: string;
@@ -33,6 +48,9 @@ export interface BuildOrder {
   pinned?: boolean;
   favorite?: boolean;
   branches?: BuildOrderBranch[];
+  source?: BuildOrderSourceMetadata;
+  contentVersion?: string;
+  warnings?: string[];
 }
 
 export type Civilization =
@@ -56,7 +74,15 @@ export type Civilization =
   | "Golden Horde"
   | "Macedonian Dynasty"
   | "Sengoku Daimyo"
-  | "Tughlaq Dynasty";
+  | "Tughlaq Dynasty"
+  // Knights of Cross and Rose / Yue Fei's Legacy
+  | "Knights Templar"
+  | "House of Lancaster"
+  | "Jin Dynasty"
+  // Preserve unrecognized source data without silently rewriting to English.
+  | (string & {});
+
+export const CONTENT_BASELINE_VERSION = "2026-05-07";
 
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 
@@ -82,6 +108,9 @@ export const CIVILIZATIONS: Civilization[] = [
   "Macedonian Dynasty",
   "Sengoku Daimyo",
   "Tughlaq Dynasty",
+  "Knights Templar",
+  "House of Lancaster",
+  "Jin Dynasty",
 ];
 
 export const DIFFICULTIES: Difficulty[] = ["Beginner", "Intermediate", "Advanced", "Expert"];

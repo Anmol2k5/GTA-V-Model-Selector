@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   ImportError,
-  ImportErrorCode,
+  type ImportErrorCode,
   createImportError,
   formatErrorForUser,
   isNetworkError,

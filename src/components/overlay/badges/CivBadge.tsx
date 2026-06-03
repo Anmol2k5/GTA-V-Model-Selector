@@ -125,6 +125,21 @@ const CIV_COLORS: Record<string, { bg: string; text: string; border: string }> =
     text: "text-teal-400",
     border: "border-teal-500/30",
   },
+  "Knights Templar": {
+    bg: "bg-zinc-100/15",
+    text: "text-zinc-100",
+    border: "border-zinc-100/30",
+  },
+  "House of Lancaster": {
+    bg: "bg-red-500/20",
+    text: "text-red-300",
+    border: "border-red-500/30",
+  },
+  "Jin Dynasty": {
+    bg: "bg-yellow-500/20",
+    text: "text-yellow-300",
+    border: "border-yellow-500/30",
+  },
 };
 
 const DEFAULT_COLORS = {

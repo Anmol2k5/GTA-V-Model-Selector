@@ -280,7 +280,7 @@ describe("aoe4world API", () => {
       }
     });
 
-    it("logs warning and defaults to English for unknown civilization", async () => {
+    it("logs warning and preserves unknown civilization", async () => {
       const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => { });
 
       mockFetch.mockResolvedValueOnce({
@@ -294,7 +294,8 @@ describe("aoe4world API", () => {
       });
 
       const result = await fetchAoe4WorldBuild(123);
-      expect(result.civilization).toBe("English");
+      expect(result.civilization).toBe("unknown_civ");
+      expect(result.warnings?.[0]).toContain('Unknown civilization "unknown_civ"');
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Unknown civilization "unknown_civ"')
       );

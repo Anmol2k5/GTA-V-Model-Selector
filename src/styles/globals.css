@@ -246,10 +246,28 @@
 /* Civilization Colors */
 .civ-theme-english { --civ-color: 0 84% 60%; }
 .civ-theme-french { --civ-color: 221 83% 53%; }
-.civ-theme-hre { --civ-color: 45 93% 47%; }
+.civ-theme-hre,
+.civ-theme-holy-roman-empire { --civ-color: 45 93% 47%; }
 .civ-theme-mongols { --civ-color: 28 80% 52%; }
 .civ-theme-rus { --civ-color: 142 71% 45%; }
 .civ-theme-chinese { --civ-color: 0 72% 51%; }
+.civ-theme-delhi-sultanate { --civ-color: 160 84% 39%; }
+.civ-theme-abbasid-dynasty { --civ-color: 38 92% 50%; }
+.civ-theme-ottomans { --civ-color: 0 72% 45%; }
+.civ-theme-malians { --civ-color: 32 95% 44%; }
+.civ-theme-byzantines { --civ-color: 271 91% 65%; }
+.civ-theme-japanese { --civ-color: 333 71% 51%; }
+.civ-theme-jeanne-d-arc { --civ-color: 239 84% 67%; }
+.civ-theme-ayyubids { --civ-color: 84 81% 44%; }
+.civ-theme-zhu-xi-s-legacy { --civ-color: 351 83% 55%; }
+.civ-theme-order-of-the-dragon { --civ-color: 215 25% 58%; }
+.civ-theme-golden-horde { --civ-color: 33 96% 45%; }
+.civ-theme-macedonian-dynasty { --civ-color: 262 83% 58%; }
+.civ-theme-sengoku-daimyo { --civ-color: 0 74% 42%; }
+.civ-theme-tughlaq-dynasty { --civ-color: 173 80% 40%; }
+.civ-theme-knights-templar { --civ-color: 0 0% 92%; }
+.civ-theme-house-of-lancaster { --civ-color: 0 84% 58%; }
+.civ-theme-jin-dynasty { --civ-color: 43 96% 50%; }
 .civ-theme-default { --civ-color: 45 93% 47%; }
 
 /* Scrollbar */

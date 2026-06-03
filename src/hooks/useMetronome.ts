@@ -52,7 +52,7 @@ export function useMetronome() {
       clearTimeout(pulseTimeoutRef.current);
     }
     pulseTimeoutRef.current = setTimeout(() => setPulsing(false), PULSE_DURATION_MS);
-  }, [playSound, recordTick, setPulsing, coachLoop, currentTaskIndex, nextTask]);
+  }, [playSound, recordTick, setPulsing, coachLoop, currentTaskIndex, nextTask, speakReminder]);
 
   // Use interval hook (null delay pauses the interval)
   useInterval(tick, enabled ? interval * 1000 : null);

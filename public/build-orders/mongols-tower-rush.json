@@ -5,6 +5,8 @@
   "description": "High aggression strategy. Uses [icon:outpost] Towers to deny enemy resources early. High risk, high reward.",
   "difficulty": "Expert",
   "enabled": true,
+  "contentVersion": "2026-05-07",
+  "source": { "type": "bundled", "rawCivilization": "Mongols" },
   "steps": [
     {
       "id": "step-1",

@@ -199,6 +199,7 @@ export function useGlobalHotkeys() {
     handleCycleBuildOrder,
     handleReset,
     togglePause,
+    toggleCounters,
     setActiveBranch,
     activateBranch,
     setVisible,

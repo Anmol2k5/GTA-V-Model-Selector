@@ -262,4 +262,11 @@ describe("renderIconText", () => {
     const { container } = render(<>{renderIconText("[icon:villager] gathers [icon:food]")}</>);
     expect(container.textContent).toContain("gathers");
   });
+
+  it("does not auto-replace text next to explicit icon tags", () => {
+    const { container } = render(<>{renderIconText("Build [icon:house] house and gather [icon:food] food")}</>);
+    expect(container.textContent).toContain("house");
+    expect(container.textContent).toContain("food");
+    expect(container.querySelectorAll("img")).toHaveLength(2);
+  });
 });

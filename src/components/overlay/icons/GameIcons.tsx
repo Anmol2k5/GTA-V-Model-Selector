@@ -185,36 +185,36 @@ export const GAME_ICONS = {
   kura_storehouse: { path: "/icons/mill.webp", emoji: "🏠", color: "#fbbf24" },
   
   // More landmarks
-  abbey_of_kings: { path: "/icons/monastery.webp", emoji: "⛪", color: "#8b5cf6" },
+  abbey_of_kings: { path: "/icons/monk.webp", emoji: "⛪", color: "#8b5cf6" },
   kings_palace: { path: "/icons/town_center.webp", emoji: "🏰", color: "#fbbf24" },
   berkshire_palace: { path: "/icons/white-tower.webp", emoji: "🏯", color: "#64748b" },
   wynguard_palace: { path: "/icons/military-academy.webp", emoji: "🏰", color: "#ef4444" },
   guild_hall: { path: "/icons/market.webp", emoji: "🏛️", color: "#f97316" },
-  royal_institute: { path: "/icons/university.webp", emoji: "📜", color: "#3b82f6" },
-  red_palace: { path: "/icons/keep.webp", emoji: "🏰", color: "#dc2626" },
+  royal_institute: { path: "/icons/castle_age.webp", emoji: "📜", color: "#3b82f6" },
+  red_palace: { path: "/icons/white-tower.webp", emoji: "🏰", color: "#dc2626" },
   college_of_artillery: { path: "/icons/siege_workshop.webp", emoji: "🎓", color: "#78716c" },
-  elzbach_palace: { path: "/icons/keep.webp", emoji: "🏰", color: "#64748b" },
+  elzbach_palace: { path: "/icons/white-tower.webp", emoji: "🏰", color: "#64748b" },
   palace_of_swabia: { path: "/icons/town_center.webp", emoji: "🏰", color: "#fbbf24" },
   grand_winery: { path: "/icons/mill.webp", emoji: "🍷", color: "#84cc16" },
   imperial_hippodrome: { path: "/icons/stable.webp", emoji: "🏟️", color: "#a855f7" },
-  golden_horn_tower: { path: "/icons/keep.webp", emoji: "🗼", color: "#fbbf24" },
+  golden_horn_tower: { path: "/icons/white-tower.webp", emoji: "🗼", color: "#fbbf24" },
 
   // Japanese landmarks
   koka_township: { path: "/icons/shinobi.webp", emoji: "🥷", color: "#374151" },
-  floating_gate: { path: "/icons/monastery.webp", emoji: "⛩️", color: "#8b5cf6" },
-  temple_of_equality: { path: "/icons/monastery.webp", emoji: "🧘", color: "#8b5cf6" },
-  castle_of_the_crow: { path: "/icons/keep.webp", emoji: "🐦", color: "#64748b" },
+  floating_gate: { path: "/icons/monk.webp", emoji: "⛩️", color: "#8b5cf6" },
+  temple_of_equality: { path: "/icons/monk.webp", emoji: "🧘", color: "#8b5cf6" },
+  castle_of_the_crow: { path: "/icons/white-tower.webp", emoji: "🐦", color: "#64748b" },
   tanegashima_gunsmith: { path: "/icons/siege_workshop.webp", emoji: "🔫", color: "#78716c" },
 
   // Malian landmarks
   mansa_quarry: { path: "/icons/mining_camp.webp", emoji: "💎", color: "#eab308" },
   saharan_trade_network: { path: "/icons/market.webp", emoji: "🐫", color: "#f97316" },
   farimba_garrison: { path: "/icons/barracks.webp", emoji: "⛺", color: "#ef4444" },
-  fort_of_the_huntress: { path: "/icons/keep.webp", emoji: "🏹", color: "#dc2626" },
+  fort_of_the_huntress: { path: "/icons/white-tower.webp", emoji: "🏹", color: "#dc2626" },
 
   // Ottoman landmarks
   twin_minaret_medrese: { path: "/icons/mill.webp", emoji: "🕌", color: "#fbbf24" },
-  istanbul_observatory: { path: "/icons/university.webp", emoji: "🔭", color: "#3b82f6" },
+  istanbul_observatory: { path: "/icons/castle_age.webp", emoji: "🔭", color: "#3b82f6" },
   tophane_arsenal: { path: "/icons/siege_workshop.webp", emoji: "🏭", color: "#78716c" },
 
   // Units
@@ -255,7 +255,10 @@ export const GAME_ICONS = {
   jeanne_d_arc: { path: "/icons/king.webp", emoji: "👸", color: "#3b82f6" },
   order_of_the_dragon: { path: "/icons/knight.webp", emoji: "🐉", color: "#dc2626" },
   zhu_xi_legacy: { path: "/icons/zhuge-nu.webp", emoji: "📜", color: "#eab308" },
-  ayyubids: { path: "/icons/camel_archer.webp", emoji: "🕌", color: "#16a34a" },
+  ayyubids: { path: "/icons/archer.webp", emoji: "🕌", color: "#16a34a" },
+  knights_templar: { path: "/icons/knight.webp", emoji: "✚", color: "#f8fafc" },
+  house_of_lancaster: { path: "/icons/council-hall.webp", emoji: "🌹", color: "#ef4444" },
+  jin_dynasty: { path: "/icons/imperial-academy.webp", emoji: "🏯", color: "#eab308" },
 
   // Actions
   rally: { path: "/icons/rally.webp", emoji: "🚩", color: "#22c55e" },
@@ -532,6 +535,7 @@ export function renderIconText(text: string, size = 18): React.ReactNode {
   // 1. Split text into parts (text and existing [icon:...] tags)
   // Using parentheses in split regex includes the delimiter in the result array
   const pattern = /(\[icon:[a-zA-Z0-9_-]+\])/g;
+  const hasExplicitIcons = /\[icon:[a-zA-Z0-9_-]+\]/.test(text);
   const parts = text.split(pattern);
 
   return parts.map((part, index) => {
@@ -545,6 +549,10 @@ export function renderIconText(text: string, size = 18): React.ReactNode {
       // Fallback for unknown icons
       const fallbackText = iconType.replace(/[_-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       return <span key={index} className="mx-0.5 font-bold text-amber-400/80">{fallbackText}</span>;
+    }
+
+    if (hasExplicitIcons) {
+      return <span key={index}>{part}</span>;
     }
 
     // It's a text part, apply auto-mappings

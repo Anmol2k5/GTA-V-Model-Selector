@@ -22,9 +22,9 @@ export function FullTimer({ targetTiming }: FullTimerProps) {
 
   return (
     <div data-testid="timer-bar" className="px-3 py-1.5 border-b border-white/10">
-      <div className="grid grid-cols-[1fr_auto_auto] items-center gap-3">
+      <div className="flex min-w-0 items-center justify-between gap-3">
         {/* Timer display */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1.5">
           {isPaused ? (
             <Pause className="w-4 h-4 text-amber-400 animate-pulse" />
           ) : (
@@ -52,7 +52,7 @@ export function FullTimer({ targetTiming }: FullTimerProps) {
         {/* Delta indicator */}
         <div
           className={cn(
-            "flex items-center gap-1 font-mono text-sm font-medium tabular-nums justify-end min-w-[80px]",
+            "flex min-w-[64px] flex-1 items-center justify-center gap-1 font-mono text-sm font-medium tabular-nums",
             showDelta ? deltaStyles.colorClass : "text-white/30",
             deltaPulse && showDelta && "animate-pulse"
           )}
@@ -63,10 +63,10 @@ export function FullTimer({ targetTiming }: FullTimerProps) {
         </div>
 
         {/* Right side: target timing + mute button */}
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex min-w-0 shrink-0 items-center justify-end gap-2">
           {targetTiming && (
             <span
-              className="text-xs text-white/40 whitespace-nowrap"
+              className="max-w-[132px] truncate whitespace-nowrap text-xs text-white/40"
               title={adjustedTarget ? `Original: ${targetTiming}` : undefined}
             >
               Target:{" "}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Volume2, VolumeX, MousePointer2Off, MousePointer2, Minimize2, Maximize2, Swords } from "lucide-react";
+import { Volume2, VolumeX, MousePointer2Off, MousePointer2, Minimize2, Maximize2, Swords, ScanEye } from "lucide-react";
 import { useTTS } from "@/hooks";
-import { useConfigStore, useMatchupStore } from "@/stores";
+import { useConfigStore, useMatchupStore, useOcrAssistStore } from "@/stores";
 import { cn, logTelemetryEvent } from "@/lib/utils";
 import { toggleClickThrough as tauriToggleClickThrough, toggleCompactMode as tauriToggleCompactMode, saveConfig } from "@/lib/tauri";
 
@@ -61,6 +61,8 @@ export function StatusIndicators({
   const clickThrough = config.click_through;
   const compactMode = config.compact_mode;
   const { isOpen: matchupOpen, toggle: toggleMatchup } = useMatchupStore();
+  const { status: ocrStatus, confidence: ocrConfidence } = useOcrAssistStore();
+  const ocrEnabled = config.ocrAssist?.enabled ?? false;
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -161,6 +163,18 @@ export function StatusIndicators({
         inactiveIcon={<Swords className="w-3.5 h-3.5" />}
         label="Matchup cheat sheet"
         onClick={handleMatchupToggle}
+      />
+
+      {/* OCR assist status */}
+      <StatusIcon
+        active={ocrEnabled && ocrStatus !== "off"}
+        activeIcon={<ScanEye className="w-3.5 h-3.5" />}
+        inactiveIcon={<ScanEye className="w-3.5 h-3.5" />}
+        label={
+          ocrEnabled
+            ? `OCR Assist ${ocrStatus} (${Math.round(ocrConfidence * 100)}%)`
+            : "OCR Assist Off"
+        }
       />
 
       {clickThroughUndoActive && onUndoClickThrough && (

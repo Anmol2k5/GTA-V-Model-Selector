@@ -4,7 +4,7 @@
  */
 
 import type { BuildOrder, BuildOrderStep, Civilization } from "@/types";
-import { BuildOrderSchema } from "@/types";
+import { BuildOrderSchema, CIVILIZATIONS } from "@/types";
 
 // Maximum allowed steps in a build order to prevent performance issues
 export const MAX_BUILD_ORDER_STEPS = 200;
@@ -179,6 +179,31 @@ function generateId(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
+function normalizeCivilization(civ: string): { civilization: Civilization; warning?: string } {
+  const exact = CIVILIZATIONS.find((known) => known.toLowerCase() === civ.toLowerCase());
+  if (exact) return { civilization: exact };
+
+  const aliases: Record<string, Civilization> = {
+    knights_templar: "Knights Templar",
+    knightstemplar: "Knights Templar",
+    templar: "Knights Templar",
+    house_of_lancaster: "House of Lancaster",
+    houseoflancaster: "House of Lancaster",
+    lancaster: "House of Lancaster",
+    jin_dynasty: "Jin Dynasty",
+    jindynasty: "Jin Dynasty",
+    jin: "Jin Dynasty",
+  };
+  const normalized = civ.toLowerCase().replace(/[\s-]+/g, "_");
+  const mapped = aliases[normalized];
+  if (mapped) return { civilization: mapped };
+
+  const warning =
+    `Unknown civilization "${civ}" from Age4Builder. Preserved source value; icon/theme support may be limited.`;
+  console.warn(warning);
+  return { civilization: civ as Civilization, warning };
+}
+
 function estimateTiming(stepIndex: number): string {
   // Rough timing estimates based on step position
   const seconds = stepIndex * 30;
@@ -197,6 +222,7 @@ export function convertAge4Builder(input: Age4BuilderFormat): BuildOrder {
   const steps: BuildOrderStep[] = [];
   let stepNumber = 1;
   const intelligentConverter = new IntelligentConverter();
+  const normalizedCivilization = normalizeCivilization(input.civilization);
 
   for (const step of input.build_order) {
     // Each note becomes a separate step for clarity
@@ -262,11 +288,19 @@ export function convertAge4Builder(input: Age4BuilderFormat): BuildOrder {
   const converted: BuildOrder = {
     id: generateId(input.name),
     name: input.name,
-    civilization: input.civilization as Civilization,
+    civilization: normalizedCivilization.civilization,
     description: descParts.join(". "),
     difficulty: "Intermediate",
     enabled: true,
     steps,
+    source: {
+      type: "age4builder",
+      url: input.source && input.source !== "unknown" ? input.source : undefined,
+      importedAt: new Date().toISOString(),
+      rawCivilization: input.civilization,
+    },
+    contentVersion: "2026-05-07",
+    warnings: normalizedCivilization.warning ? [normalizedCivilization.warning] : undefined,
   };
 
   return BuildOrderSchema.parse(converted) as BuildOrder;

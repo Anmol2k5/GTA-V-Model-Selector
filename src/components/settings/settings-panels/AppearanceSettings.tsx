@@ -157,15 +157,18 @@ export function AppearanceSettings() {
           <div className="space-y-2">
             <Label>Overlay Preset</Label>
             <Select
-              value={config.overlay_preset ?? "info_dense"}
+              value={config.overlay_preset ?? "build-order"}
               onValueChange={(v) => handlePresetChange(v as OverlayPreset)}
             >
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="info_dense">Info dense</SelectItem>
                 <SelectItem value="minimal">Minimal</SelectItem>
+                <SelectItem value="coach">Coach</SelectItem>
+                <SelectItem value="build-order">Build order</SelectItem>
+                <SelectItem value="matchup">Matchup</SelectItem>
+                <SelectItem value="stream">Stream</SelectItem>
               </SelectContent>
             </Select>
           </div>

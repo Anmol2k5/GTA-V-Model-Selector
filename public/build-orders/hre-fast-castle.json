@@ -5,6 +5,8 @@
   "description": "Uses [icon:prelate] Prelate buffs to reach [icon:castle_age] Castle Age rapidly. Focuses on [icon:relic] Relic control and massive gold generation.",
   "difficulty": "Intermediate",
   "enabled": true,
+  "contentVersion": "2026-05-07",
+  "source": { "type": "bundled", "rawCivilization": "Holy Roman Empire" },
   "steps": [
     {
       "id": "step-1",

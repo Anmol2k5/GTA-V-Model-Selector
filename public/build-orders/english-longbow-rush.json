@@ -5,6 +5,8 @@
   "description": "The quintessential English opening. Focuses on rapid transition into [icon:feudal_age] Feudal Age for constant [icon:longbowman] Longbowmen pressure.",
   "difficulty": "Beginner",
   "enabled": true,
+  "contentVersion": "2026-05-07",
+  "source": { "type": "bundled", "rawCivilization": "English" },
   "steps": [
     {
       "id": "step-1",

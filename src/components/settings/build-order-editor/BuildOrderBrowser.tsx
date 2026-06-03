@@ -86,6 +86,13 @@ export function BuildOrderBrowser() {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground line-clamp-2 mb-4">{preview.description}</p>
+                {preview.warnings && preview.warnings.length > 0 && (
+                  <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 p-2 text-[11px] text-amber-100">
+                    {preview.warnings.map((warning) => (
+                      <p key={warning}>{warning}</p>
+                    ))}
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <Button size="sm" className="flex-1 gap-2" onClick={confirmImport}>
                     <Download className="w-3.5 h-3.5" />

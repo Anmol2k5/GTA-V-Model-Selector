@@ -30,6 +30,10 @@ vi.mock("@/stores", () => ({
     isOpen: false,
     toggle: mockToggleMatchup,
   })),
+  useOcrAssistStore: vi.fn(() => ({
+    status: "off",
+    confidence: 0,
+  })),
 }));
 
 // Mock useTTS hook
@@ -68,6 +72,9 @@ vi.mock("lucide-react", () => ({
   ),
   Swords: ({ className }: { className?: string }) => (
     <span data-testid="swords" className={className}>⚔️</span>
+  ),
+  ScanEye: ({ className }: { className?: string }) => (
+    <span data-testid="scan-eye" className={className}>👁</span>
   ),
 }));
 

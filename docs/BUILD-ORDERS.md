@@ -18,6 +18,12 @@ Build orders are stored as JSON files in:
   "description": "string",
   "difficulty": "string",
   "enabled": true,
+  "contentVersion": "2026-05-07",
+  "source": {
+    "type": "bundled",
+    "rawCivilization": "English"
+  },
+  "warnings": [],
   "steps": [
     {
       "id": "string",
@@ -46,6 +52,9 @@ Build orders are stored as JSON files in:
 | `description` | string | Yes | Strategy description |
 | `difficulty` | string | Yes | Skill level required |
 | `enabled` | boolean | No | Whether to include in rotation (default: true) |
+| `contentVersion` | string | No | Content baseline used to validate the build (current bundled baseline: `2026-05-07`) |
+| `source` | object | No | Source metadata for bundled/imported/manual builds |
+| `warnings` | array | No | Import or validation warnings shown to users |
 | `steps` | array | Yes | Build order steps |
 
 ### Step Fields
@@ -87,7 +96,26 @@ Jeanne d'Arc
 Ayyubids
 Zhu Xi's Legacy
 Order of the Dragon
+Golden Horde
+Macedonian Dynasty
+Sengoku Daimyo
+Tughlaq Dynasty
+Knights Templar
+House of Lancaster
+Jin Dynasty
 ```
+
+Unknown imported civilizations are preserved as source text and receive a warning instead of silently falling back to English.
+
+### Source Metadata
+
+| Field | Description |
+|-------|-------------|
+| `source.type` | One of `bundled`, `aoe4world`, `aoe4guides`, `age4builder`, `manual` |
+| `source.url` | Original source URL when available |
+| `source.importedAt` | Import timestamp for external builds |
+| `source.updatedAt` | Source update timestamp when available |
+| `source.rawCivilization` | Original civilization value from the source |
 
 ## Difficulty Levels
 

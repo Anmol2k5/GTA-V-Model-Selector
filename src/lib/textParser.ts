@@ -234,7 +234,7 @@ function parseResourceBlock(text: string): ParsedResources | null {
  */
 function parseTimestamp(text: string): string | null {
   // Pattern: optional prefix (@, ~, [) then mm:ss, optional suffix (])
-  const pattern = /[@~\[]?(\d{1,2}:\d{2})\]?/;
+  const pattern = /[@~[]?(\d{1,2}:\d{2})]?/;
   const match = text.match(pattern);
   return match ? match[1] : null;
 }
@@ -264,7 +264,7 @@ function cleanLine(line: string): string {
   cleaned = cleaned.replace(/\(?\d+\/\d+\/\d+\/\d+\)?/g, "");
 
   // Remove timestamps
-  cleaned = cleaned.replace(/[@~\[]?\d{1,2}:\d{2}\]?/g, "");
+  cleaned = cleaned.replace(/[@~[]?\d{1,2}:\d{2}]?/g, "");
 
   // Remove leading bullet points, dashes, numbers, and markers
   cleaned = cleaned.replace(/^[-*•·]\s*/g, "");

@@ -58,20 +58,21 @@ import {
   GameplaySettings,
   MetronomeSettings,
   TelemetryToggle,
+  OcrAssistSettings,
 } from "./settings-panels";
 import { SessionHistory } from "./SessionHistory";
 import { CIVILIZATIONS, DIFFICULTIES, type BuildOrder } from "@/types";
 
 type StarterTemplate = Omit<BuildOrder, "id" | "enabled">;
 
-const STARTER_BUILDS: StarterTemplate[] = [
+const CURATED_STARTERS: StarterTemplate[] = [
   {
     name: "English Fast Feudal (Safe Longbows)",
     civilization: "English",
-    description: "Stable macro opener with early longbows for map control.",
+    description: "Bundled community baseline: stable macro opener with early longbows for map control.",
     difficulty: "Beginner",
     steps: [
-      { id: "s1", description: "Queue 2 villagers to sheep; build house with starting vill", timing: "0:00", resources: { food: 50 } },
+      { id: "s1", description: "Queue 2 [icon:villager] villagers to [icon:sheep] sheep; build [icon:house] house with starting villager", timing: "0:00", resources: { food: 6, wood: 0, gold: 0, stone: 0, villagers: 6 } },
       { id: "s2", description: "Send 2 to gold, 6 to food; build mining camp", timing: "0:35" },
       { id: "s3", description: "Age up with Council Hall; rally next vills to wood", timing: "2:30" },
       { id: "s4", description: "Queue longbows; add house + second production building", timing: "4:30" },
@@ -80,7 +81,7 @@ const STARTER_BUILDS: StarterTemplate[] = [
   {
     name: "French Knight Pressure",
     civilization: "French",
-    description: "Fast School of Cavalry into early knight map pressure.",
+    description: "Bundled community baseline: fast School of Cavalry into early knight map pressure.",
     difficulty: "Intermediate",
     steps: [
       { id: "f1", description: "Queue 2 villagers to sheep; build house", timing: "0:00" },
@@ -90,6 +91,54 @@ const STARTER_BUILDS: StarterTemplate[] = [
     ],
   },
 ];
+
+const STARTER_BUILDS: StarterTemplate[] = CIVILIZATIONS.map((civilization) => {
+  const curated = CURATED_STARTERS.find((build) => build.civilization === civilization);
+  if (curated) return curated;
+
+  const idPrefix = civilization.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return {
+    name: `${civilization} Safe Feudal Baseline`,
+    civilization,
+    description: "Bundled community baseline: safe generic opener for learning clean villager production, scouting, and Feudal timing.",
+    difficulty: "Beginner",
+    contentVersion: "2026-05-07",
+    source: { type: "bundled", rawCivilization: civilization },
+    warnings: ["Baseline opener is not externally verified; replace with a matchup-specific build when available."],
+    steps: [
+      {
+        id: `${idPrefix}-1`,
+        description: "Queue [icon:villager] villagers, gather from [icon:sheep] sheep, and scout for more sheep.",
+        timing: "0:00",
+        resources: { food: 6, wood: 0, gold: 0, stone: 0, villagers: 6 },
+      },
+      {
+        id: `${idPrefix}-2`,
+        description: "Build [icon:house], then send the next villagers toward your opening resource plan.",
+        timing: "0:25",
+        resources: { food: 7, wood: 1, gold: 0, stone: 0, villagers: 7 },
+      },
+      {
+        id: `${idPrefix}-3`,
+        description: "Add [icon:mining_camp] Mining Camp and collect enough [icon:gold] gold for Feudal Age.",
+        timing: "1:40",
+        resources: { food: 7, wood: 3, gold: 2, stone: 0, villagers: 12 },
+      },
+      {
+        id: `${idPrefix}-4`,
+        description: "Age up to [icon:feudal_age] Feudal Age and keep villager production constant.",
+        timing: "3:00",
+        resources: { food: 8, wood: 3, gold: 2, stone: 0, villagers: 14, builders: 2 },
+      },
+      {
+        id: `${idPrefix}-5`,
+        description: "Scout opponent production, choose pressure or defense branch, and add military production.",
+        timing: "4:30",
+        resources: { food: 9, wood: 5, gold: 2, stone: 0, villagers: 18 },
+      },
+    ],
+  };
+});
 
 export function SettingsWindow() {
   const { config, updateConfig } = useConfigStore();
@@ -147,6 +196,11 @@ export function SettingsWindow() {
       ...starterBuild,
       id: `starter-${starterBuild.civilization.toLowerCase()}-${Date.now()}`,
       enabled: true,
+      contentVersion: starterBuild.contentVersion ?? "2026-05-07",
+      source: starterBuild.source ?? {
+        type: "bundled",
+        rawCivilization: starterBuild.civilization,
+      },
     };
     const next = [...buildOrders, newOrder];
     setBuildOrders(next);
@@ -367,6 +421,7 @@ export function SettingsWindow() {
           <div className="space-y-4 max-w-2xl">
             <GameplaySettings />
             <MetronomeSettings />
+            <OcrAssistSettings />
             <UpgradeBadgesSettings />
             <TelemetryToggle />
           </div>

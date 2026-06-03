@@ -151,13 +151,16 @@ const CIVILIZATION_CODE_MAP: Record<string, Civilization> = {
   AYY: "Ayyubids",
   ZXL: "Zhu Xi's Legacy",
   DRA: "Order of the Dragon",
-  KTE: "Order of the Dragon", // Knights of the Teutonic Order (Variant)
   HOL: "Holy Roman Empire", // Holy Roman Empire (Alias)
   // Dynasties of the East DLC
   GHO: "Golden Horde",
   MAC: "Macedonian Dynasty",
   SEN: "Sengoku Daimyo",
   TUG: "Tughlaq Dynasty",
+  KTE: "Knights Templar",
+  LAN: "House of Lancaster",
+  HLA: "House of Lancaster",
+  JIN: "Jin Dynasty",
   // Potential future or alternative codes
   ARA: "Ayyubids",
   ZUX: "Zhu Xi's Legacy",
@@ -184,7 +187,6 @@ export const CIVILIZATION_TO_CODE: Record<string, string> = {
   "Zhu Xi's Legacy": "ZXL",
   "Order of the Dragon": "DRA",
   // Aliases/Variants
-  "Knights Templar": "KTE", 
   "Teutonic Order": "KTE",
   "The Golden Horde": "GHO",
   "Sengoku": "SEN",
@@ -193,6 +195,9 @@ export const CIVILIZATION_TO_CODE: Record<string, string> = {
   "Macedonian Dynasty": "MAC",
   "Sengoku Daimyo": "SEN",
   "Tughlaq Dynasty": "TUG",
+  "Knights Templar": "KTE",
+  "House of Lancaster": "LAN",
+  "Jin Dynasty": "JIN",
 };
 
 // Strategy to difficulty mapping
@@ -245,19 +250,18 @@ export function extractAoe4GuidesId(url: string): string | null {
 /**
  * Normalize civilization code to full name
  */
-function normalizeCivilization(civCode: string): Civilization {
+function normalizeCivilization(civCode: string): { civilization: Civilization; warning?: string } {
   const upperCode = civCode.toUpperCase();
   const mapped = CIVILIZATION_CODE_MAP[upperCode];
 
   if (!mapped) {
-    console.warn(
-      `Unknown civilization code "${civCode}" from AOE4 Guides API. ` +
-      `Falling back to "English". Please report this if it's a valid civilization.`
-    );
-    return "English";
+    const warning =
+      `Unknown civilization code "${civCode}" from AOE4 Guides API. Preserved source value; icon/theme support may be limited.`;
+    console.warn(warning);
+    return { civilization: civCode as Civilization, warning };
   }
 
-  return mapped;
+  return { civilization: mapped };
 }
 
 /**
@@ -920,6 +924,8 @@ function convertBuild(build: Aoe4GuidesBuild): BuildOrder {
   const steps: BuildOrderStep[] = [];
   let stepNumber = 1;
   const intelligentConverter = new IntelligentConverter();
+  const normalizedCivilization = normalizeCivilization(build.civ);
+  const warnings = normalizedCivilization.warning ? [normalizedCivilization.warning] : undefined;
 
   // Tracking running totals for relative resource updates (+3, -2, etc.)
   let currentFood = 0;
@@ -1051,11 +1057,19 @@ function convertBuild(build: Aoe4GuidesBuild): BuildOrder {
   const converted = BuildOrderSchema.parse({
     id: `aoe4guides-${build.id}`,
     name: build.title || "Imported Build",
-    civilization: normalizeCivilization(build.civ),
+    civilization: normalizedCivilization.civilization,
     description: descParts.join(". "),
     difficulty: strategyToDifficulty(build.strategy),
     enabled: true,
     steps,
+    source: {
+      type: "aoe4guides",
+      url: `https://aoe4guides.com/build/${build.id}`,
+      importedAt: new Date().toISOString(),
+      rawCivilization: build.civ,
+    },
+    contentVersion: "2026-05-07",
+    warnings,
   });
 
   // Safe cast: civilization and difficulty are normalized to valid enum values

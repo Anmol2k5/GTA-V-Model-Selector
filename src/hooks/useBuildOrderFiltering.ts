@@ -11,6 +11,14 @@ interface UseBuildOrderFilteringProps {
 interface UseBuildOrderFilteringResult {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  sourceFilter: string;
+  setSourceFilter: (source: string) => void;
+  cycleFilter: string;
+  setCycleFilter: (filter: string) => void;
+  favoritesOnly: boolean;
+  setFavoritesOnly: (enabled: boolean) => void;
+  contentFilter: string;
+  setContentFilter: (filter: string) => void;
   filteredOrders: BuildOrder[];
   importedAoe4GuidesIds: Set<string>;
 }
@@ -21,21 +29,32 @@ export function useBuildOrderFiltering({
   filterDiff,
 }: UseBuildOrderFilteringProps): UseBuildOrderFilteringResult {
   const [searchQuery, setSearchQuery] = useState("");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [cycleFilter, setCycleFilter] = useState("all");
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [contentFilter, setContentFilter] = useState("all");
 
   const filteredOrders = useMemo(() => {
     return buildOrders.filter((order) => {
       if (filterCiv && order.civilization !== filterCiv) return false;
       if (filterDiff && order.difficulty !== filterDiff) return false;
+      if (sourceFilter !== "all" && (order.source?.type ?? "manual") !== sourceFilter) return false;
+      if (cycleFilter === "enabled" && !order.enabled) return false;
+      if (cycleFilter === "disabled" && order.enabled) return false;
+      if (favoritesOnly && !order.favorite) return false;
+      if (contentFilter === "current" && order.contentVersion !== "2026-05-07") return false;
+      if (contentFilter === "unversioned" && order.contentVersion) return false;
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         return (
           order.name.toLowerCase().includes(query) ||
-          order.description?.toLowerCase().includes(query)
+          order.description?.toLowerCase().includes(query) ||
+          order.source?.type.toLowerCase().includes(query)
         );
       }
       return true;
     });
-  }, [buildOrders, filterCiv, filterDiff, searchQuery]);
+  }, [buildOrders, filterCiv, filterDiff, searchQuery, sourceFilter, cycleFilter, favoritesOnly, contentFilter]);
 
   // Track which aoe4guides builds have already been imported
   const importedAoe4GuidesIds = useMemo(() => {
@@ -52,6 +71,14 @@ export function useBuildOrderFiltering({
   return {
     searchQuery,
     setSearchQuery,
+    sourceFilter,
+    setSourceFilter,
+    cycleFilter,
+    setCycleFilter,
+    favoritesOnly,
+    setFavoritesOnly,
+    contentFilter,
+    setContentFilter,
     filteredOrders,
     importedAoe4GuidesIds,
   };

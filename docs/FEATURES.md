@@ -37,6 +37,14 @@ Minimal display showing only:
 - Timer
 - Step counter
 
+#### Overlay Presets
+Presets tune how much information is visible while playing:
+- **Build order**: default focused coaching layout
+- **Minimal**: compact current-step view
+- **Coach**: voice/timer only, hides build steps
+- **Matchup**: enables heavier matchup/scouting panels
+- **Stream**: wider creator-friendly layout
+
 ### Window Behavior
 
 | Feature | Description |
@@ -224,6 +232,11 @@ Build orders are loaded from:
 Filter build orders by:
 - **Civilization**: Show only specific civ builds
 - **Difficulty**: Beginner, Intermediate, Advanced, Expert
+- **Source**: Bundled, AoE4World, AoE4Guides, Age4Builder, Manual
+- **Status**: Enabled/disabled for hotkey cycling
+- **Favorites** and **content baseline**
+
+Imported builds keep source metadata and warnings. Unknown civs are preserved instead of being rewritten to English.
 
 ### Enable/Disable
 
@@ -241,6 +254,12 @@ Built-in editor for creating/modifying build orders:
 - Add/remove/reorder steps
 - Set timing and resources per step
 - Preview with icon rendering
+
+---
+
+## OCR Assist
+
+OCR Assist is experimental and opt-in. It can hold read-only state for detected age, resources, and population with confidence/warning metadata, but it does not auto-advance build steps or replace manual hotkeys.
 
 ---
 
