@@ -5,6 +5,31 @@ All notable changes to the AoE4 Overlay are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-06-05
+
+### Changed
+
+- **Instant, lower-overhead game detection.** The overlay now shows or hides the
+  moment Age of Empires IV gains or loses focus, instead of waiting up to ~700ms
+  for the next poll. Detection is driven by a Windows focus-change event hook, with
+  the old foreground poll demoted to a slow safety net — so it reacts faster *and*
+  uses less idle CPU. No settings change; "Detection speed" now tunes only the
+  safety-net cadence (responsiveness is instant either way).
+
+### Technical
+
+- Replaced the 700ms `GetForegroundWindow` busy-poll in `game_detection.rs` with
+  `SetWinEventHook(EVENT_SYSTEM_FOREGROUND, WINEVENT_OUTOFCONTEXT)` on a dedicated
+  message-loop thread. The callback only signals a worker thread (via `Condvar`);
+  the worker owns the show/hide state and performs all Tauri work, so a slow window
+  op can't stall the message pump and drop events (per MSDN's "keep the WinEvent
+  callback tiny / non-reentrant" guidance). A 2–5s safety-net poll self-heals the
+  rare missed/NULL event, and the worker re-reads `GetForegroundWindow()` fresh so a
+  NULL-delivered `hwnd` is a non-issue.
+- Extracted the pure `decide_focus()` decision (ever-seen / our-PID / last-focused
+  rules) from the Win32 plumbing and covered it with 6 new unit tests.
+- Added the `Win32_UI_Accessibility` feature to the `windows` crate.
+
 ## [1.8.0] - 2026-06-03
 
 ### Added
@@ -114,6 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced build orders, expanded hotkey support, and build-order icon rendering.
 - RTS Builds import support, plus AoE4World and AoE4 Guides imports.
 
+[1.9.0]: https://github.com/georgepwall1991/AOEOverlay/releases/tag/v1.9.0
 [1.8.0]: https://github.com/georgepwall1991/AOEOverlay/releases/tag/v1.8.0
 [1.7.0]: https://github.com/georgepwall1991/AOEOverlay/releases/tag/v1.7.0
 [1.6.0]: https://github.com/georgepwall1991/AOEOverlay/releases/tag/v1.6.0
