@@ -36,7 +36,7 @@ pub fn setup_tray<R: Runtime>(app: &App<R>) -> tauri::Result<()> {
     let _tray = TrayIconBuilder::new()
         .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
-        .tooltip("AoE4 Overlay")
+        .tooltip("Loadout")
         .on_menu_event(|app, event| {
             match event.id.as_ref() {
                 "show" => {

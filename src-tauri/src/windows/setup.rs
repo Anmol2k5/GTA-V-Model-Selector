@@ -7,7 +7,7 @@
 //!
 //! This module provides workarounds for these issues.
 
-use super::game_detection::foreground_window_is_ours;
+
 use tauri::Manager;
 use windows::Win32::Foundation::{COLORREF, HWND};
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -124,17 +124,10 @@ fn apply_overlay_window_state(window: &tauri::WebviewWindow) {
         }
     }
 
-    // Focus is critical on Windows for transparent overlay windows — but only
-    // claim it when we already own the foreground, so a launch or repaint while
-    // the game is running never tabs the player out of their match.
-    if foreground_window_is_ours() {
-        if let Err(e) = window.set_focus() {
-            eprintln!("[Windows] Failed to focus overlay window: {}", e);
-        }
-    } else if debug {
-        eprintln!(
-            "[Windows] Skipping overlay focus: foreground belongs to another app (likely the game)"
-        );
+    // Focus is critical on Windows for transparent overlay windows.
+    // For Loadout, we want to grab focus when the overlay opens so we can accept keyboard input (Q/E/Arrows).
+    if let Err(e) = window.set_focus() {
+        eprintln!("[Windows] Failed to focus overlay window: {}", e);
     }
 
     if let Err(e) = window.set_always_on_top(true) {
@@ -187,11 +180,7 @@ pub fn setup_overlay_window(app_handle: tauri::AppHandle) {
                 let _ = window.unminimize();
                 let _ = window.show();
                 force_layered_alpha_opaque(&window);
-                // Only refocus if we already hold the foreground; never steal it
-                // from a running game during these delayed repaint retries.
-                if foreground_window_is_ours() {
-                    let _ = window.set_focus();
-                }
+                let _ = window.set_focus();
                 let _ = window.set_always_on_top(true);
 
                 if cfg!(debug_assertions) {

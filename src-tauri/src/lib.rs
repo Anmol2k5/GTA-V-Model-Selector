@@ -1,105 +1,72 @@
-use std::sync::Mutex;
 #[cfg(target_os = "windows")]
 use tauri::Manager;
+use std::sync::Mutex;
 
-mod audio;
-mod commands;
-mod config;
-mod error;
 mod hotkeys;
-mod platform;
-mod state;
 mod tray;
-mod tts;
 #[cfg(target_os = "windows")]
 mod windows;
 
-use commands::*;
-use config::{load_build_orders, load_config};
-use hotkeys::register_hotkeys;
-use state::{AppState, GameDetectionRuntime};
-use tray::setup_tray;
+pub struct AppState {
+    pub hotkey: Mutex<String>,
+}
+
+#[tauri::command]
+fn update_hotkey(app: tauri::AppHandle, new_hotkey: String) -> Result<(), String> {
+    {
+        let state = app.state::<AppState>();
+        let mut hotkey = state.hotkey.lock().unwrap();
+        *hotkey = new_hotkey;
+    }
+    hotkeys::register_hotkeys(&app)?;
+    Ok(())
+}
+
+#[tauri::command]
+fn set_overlay_visible(app: tauri::AppHandle, visible: bool) {
+    #[cfg(target_os = "windows")]
+    if let Some(window) = app.get_webview_window("overlay") {
+        if visible {
+            let _ = window.show();
+            let _ = window.set_focus();
+            let _ = window.set_ignore_cursor_events(false);
+        } else {
+            // Keep window shown but ignore cursor events, or hide it
+            let _ = window.set_ignore_cursor_events(true);
+            let _ = window.hide();
+        }
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let config = load_config();
-    let build_orders = load_build_orders();
-
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        // Include tauri-plugin-store if we add it, but for now we haven't added it to Cargo.toml. 
+        // Wait, did AOEOverlay have it? Let me check Cargo.toml later.
         .manage(AppState {
-            config: Mutex::new(config),
-            build_orders: Mutex::new(build_orders),
-            tts_process: Mutex::new(None),
-            game_detection: Mutex::new(GameDetectionRuntime::default()),
+            hotkey: Mutex::new("Alt+Space".to_string()),
         })
         .setup(|app| {
-            // Setup system tray
-            setup_tray(app)?;
+            tray::setup_tray(app)?;
 
-            // Setup global hotkeys from config
-            if let Err(e) = register_hotkeys(app.handle()) {
+            if let Err(e) = hotkeys::register_hotkeys(app.handle()) {
                 eprintln!("Failed to register hotkeys: {}", e);
             }
 
-            // On Windows, apply visibility fixes for transparent overlay window
             #[cfg(target_os = "windows")]
             {
                 windows::setup_overlay_window(app.handle().clone());
-                // Watch the foreground window so the overlay auto-shows in-game
-                // and hides the moment you alt-tab away.
-                windows::start_game_detection(app.handle().clone());
-
-                // Re-apply saved content protection — a freshly created window
-                // starts capturable (WDA_NONE) regardless of the stored setting.
-                let protect = app
-                    .state::<AppState>()
-                    .config
-                    .lock()
-                    .map(|c| c.content_protection)
-                    .unwrap_or(false);
-                if protect {
-                    if let Some(window) = app.get_webview_window("overlay") {
-                        if let Err(e) = windows::set_content_protection(&window, true) {
-                            eprintln!(
-                                "[Windows] Failed to apply content protection at startup: {e}"
-                            );
-                        }
-                    }
-                }
             }
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            get_config,
-            save_config,
-            reload_hotkeys,
-            get_build_orders,
-            get_build_orders_dir_path,
-            save_build_order,
-            delete_build_order,
-            get_window_position,
-            set_window_position,
-            reset_window_position,
-            get_window_size,
-            set_window_size,
-            recreate_overlay_window,
-            show_settings,
-            set_click_through,
-            toggle_click_through,
-            toggle_compact_mode,
-            set_content_protection,
-            get_game_detection_state,
+            update_hotkey,
             set_overlay_visible,
-            import_build_order,
-            export_build_order,
-            tts::speak,
-            tts::tts_stop,
-            audio::play_sound,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "AoE4 Overlay",
-  "version": "1.9.0",
-  "identifier": "com.aoe4overlay.overlay",
+  "productName": "Loadout",
+  "version": "0.1.0",
+  "identifier": "com.loadout.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "overlay",
-        "title": "AoE4 Overlay",
+        "title": "Loadout Overlay",
         "width": 500,
         "height": 600,
         "resizable": true,
@@ -29,7 +29,7 @@
       },
       {
         "label": "settings",
-        "title": "AoE4 Overlay - Settings",
+        "title": "Loadout Settings",
         "width": 800,
         "height": 600,
         "resizable": true,
@@ -54,9 +54,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "category": "Game",
-    "shortDescription": "Build order overlay for Age of Empires IV",
-    "longDescription": "A transparent overlay that displays build orders during Age of Empires IV gameplay. Import builds from aoe4world.com or aoe4guides.com, navigate with hotkeys, and improve your game.",
+    "category": "Utility",
+    "shortDescription": "AI Model Switcher",
+    "longDescription": "A quick AI model switcher overlay for developers using Codex and Claude Code.",
     "windows": {
       "certificateThumbprint": null,
       "timestampUrl": null
