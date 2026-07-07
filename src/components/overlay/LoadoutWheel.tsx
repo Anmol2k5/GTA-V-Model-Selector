@@ -28,6 +28,15 @@ const getColorClasses = (colorHint: string) => {
   }
 };
 
+const setNativeOverlayVisible = async (visible: boolean) => {
+  if (window.loadoutNative) {
+    await window.loadoutNative.setOverlayVisible(visible);
+    return;
+  }
+
+  await invoke("set_overlay_visible", { visible });
+};
+
 export const LoadoutWheel: React.FC = () => {
   const { presets, selectedId, setSelectedId } = usePresetStore();
   const [isOpen, setIsOpen] = useState(false);
@@ -66,7 +75,7 @@ export const LoadoutWheel: React.FC = () => {
       }
     }
     setIsOpen(false);
-    invoke("set_overlay_visible", { visible: false });
+    setNativeOverlayVisible(false);
   }, [presets]);
 
   // Keyboard navigation
@@ -77,7 +86,7 @@ export const LoadoutWheel: React.FC = () => {
         confirmSelection();
       } else if (e.key === "Escape") {
         setIsOpen(false);
-        invoke("set_overlay_visible", { visible: false });
+        setNativeOverlayVisible(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -111,9 +120,29 @@ export const LoadoutWheel: React.FC = () => {
 
   // Listen to Rust hotkey events
   useEffect(() => {
+    if (window.loadoutNative) {
+      const unlistenPressed = window.loadoutNative.onHotkeyPressed(() => {
+        setIsOpen(true);
+        setNativeOverlayVisible(true);
+      });
+      const unlistenReleased = window.loadoutNative.onHotkeyReleased(() => {
+        setIsOpen((open) => {
+          if (open) {
+            confirmSelection();
+          }
+          return false;
+        });
+      });
+
+      return () => {
+        unlistenPressed();
+        unlistenReleased();
+      };
+    }
+
     const unlistenPressed = listen("hotkey-pressed", () => {
       setIsOpen(true);
-      invoke("set_overlay_visible", { visible: true });
+      setNativeOverlayVisible(true);
     });
     const unlistenReleased = listen("hotkey-released", () => {
       setIsOpen((open) => {
